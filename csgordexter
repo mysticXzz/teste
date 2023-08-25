@@ -1,0 +1,392 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "Flow Legit",
+    LoadingTitle = "Injetando menu e aplicando bypass...",
+    LoadingSubtitle = "by dexter7",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = nil,
+        FileName = "Big Hub"
+    },
+    Discord = {
+        Enabled = true,
+        Invite = "fQaKnKYusp",
+        RememberJoins = true
+    }
+})
+
+
+local Tab = Window:CreateTab("LegitBot", 4483345998) -- Title, Image
+
+local Section = Tab:CreateSection("Aimlock")
+
+local Toggle = Tab:CreateToggle({
+    Name = "Aimlock",
+    CurrentValue = false,
+    Flag = "Toggle1",
+    Callback = function(Value)
+        local FOVCircle -- Declaramos a variável aqui fora
+
+       if Value then
+           local Camera = workspace.CurrentCamera
+           local Players = game:GetService("Players")
+           local RunService = game:GetService("RunService")
+           local UserInputService = game:GetService("UserInputService")
+           local TweenService = game:GetService("TweenService")
+           local LocalPlayer = Players.LocalPlayer
+           local Holding = false
+
+           _G.AimbotEnabled = true
+           _G.TeamCheck = true
+           _G.AimPart = "Head"
+           _G.Sensitivity = 0
+
+           _G.CircleSides = 64
+           _G.CircleColor = Color3.fromRGB(255, 255, 255)
+           _G.CircleTransparency = 0.7
+           _G.CircleRadius = 80
+           _G.CircleFilled = false
+           _G.CircleVisible = false
+           _G.CircleThickness = 0
+
+           FOVCircle = Drawing.new("Circle")
+           FOVCircle.Position = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)
+           FOVCircle.Radius = _G.CircleRadius
+           FOVCircle.Filled = _G.CircleFilled
+           FOVCircle.Color = _G.CircleColor
+           FOVCircle.Visible = _G.CircleVisible
+           FOVCircle.Transparency = _G.CircleTransparency
+           FOVCircle.NumSides = _G.CircleSides
+           FOVCircle.Thickness = _G.CircleThickness
+
+           local function GetClosestPlayer()
+               local MaximumDistance = _G.CircleRadius
+               local Target = nil
+
+               for _, v in next, Players:GetPlayers() do
+                   if v.Name ~= LocalPlayer.Name then
+                       if _G.TeamCheck == true then
+                           if v.Team ~= LocalPlayer.Team then
+                               if v.Character ~= nil then
+                                   if v.Character:FindFirstChild("HumanoidRootPart") ~= nil then
+                                       if v.Character:FindFirstChild("Humanoid") ~= nil and v.Character:FindFirstChild("Humanoid").Health > 0 then
+                                           local ScreenPoint = Camera:WorldToScreenPoint(v.Character:WaitForChild("HumanoidRootPart").Position)
+                                           local VectorDistance = (Vector2.new(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y) - Vector2.new(ScreenPoint.X, ScreenPoint.Y)).Magnitude
+                                           
+                                           if VectorDistance < MaximumDistance then
+                                               Target = v
+                                           end
+                                       end
+                                   end
+                               end
+                           end
+                       else
+                           if v.Character ~= nil then
+                               if v.Character:FindFirstChild("HumanoidRootPart") ~= nil then
+                                   if v.Character:FindFirstChild("Humanoid") ~= nil and v.Character:FindFirstChild("Humanoid").Health > 0 then
+                                       local ScreenPoint = Camera:WorldToScreenPoint(v.Character:WaitForChild("HumanoidRootPart").Position)
+                                       local VectorDistance = (Vector2.new(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y) - Vector2.new(ScreenPoint.X, ScreenPoint.Y)).Magnitude
+                                       
+                                       if VectorDistance < MaximumDistance then
+                                           Target = v
+                                       end
+                                   end
+                               end
+                           end
+                       end
+                   end
+               end
+
+               return Target
+           end
+
+           UserInputService.InputBegan:Connect(function(Input)
+               if Input.UserInputType == Enum.UserInputType.MouseButton2 then
+                   Holding = true
+               end
+           end)
+
+           UserInputService.InputEnded:Connect(function(Input)
+               if Input.UserInputType == Enum.UserInputType.MouseButton2 then
+                   Holding = false
+               end
+           end)
+
+           RunService.RenderStepped:Connect(function()
+               FOVCircle.Position = Vector2.new(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y)
+               FOVCircle.Radius = _G.CircleRadius
+               FOVCircle.Filled = _G.CircleFilled
+               FOVCircle.Color = _G.CircleColor
+               FOVCircle.Visible = _G.CircleVisible
+               FOVCircle.Transparency = _G.CircleTransparency
+               FOVCircle.NumSides = _G.CircleSides
+               FOVCircle.Thickness = _G.CircleThickness
+
+               if Holding == true and _G.AimbotEnabled == true then
+                   TweenService:Create(Camera, TweenInfo.new(_G.Sensitivity, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {CFrame = CFrame.new(Camera.CFrame.Position, GetClosestPlayer().Character[_G.AimPart].Position)}):Play()
+               end
+           end)
+       else
+           _G.AimbotEnabled = false
+           if FOVCircle then
+               FOVCircle.Visible = false -- Remova o círculdo de FOV quando o Aimlock for desativado
+           end
+       end
+    end,
+})
+
+local FOVCircle = Drawing.new("Circle") -- Declare FOVCircle outside the Aimlock toggle function
+
+local ToggleFov = Tab:CreateToggle({
+    Name = "FOV",
+    CurrentValue = false,
+    Flag = "Toggle2",
+    Callback = function(Value)
+        if Value then
+            _G.CircleVisible = true
+        else
+            _G.CircleVisible = false
+        end
+    end,
+})
+
+local Section = Tab:CreateSection("Gun Mods")
+
+local Button = Tab:CreateButton({
+   Name = "NoRecoil, NoSpreand and Inf Ammo",
+   Callback = function()
+   for i,v in pairs(game:GetService("ReplicatedStorage").Weapons:GetDescendants()) do
+	if v.Name == "Ammo" then
+		v.Value = 9e9
+	end
+	if v.Name == "FireRate" then
+		v.Value = 0
+	end
+	if v.Name == "StoredAmmo" then
+		v.Value = 9e9
+	end
+	if v.Name == "Auto" then
+		v.Value = true
+	end
+	game:GetService("RunService"):UnbindFromRenderStep("recoil")
+	if v.Name == "Spread" then
+		v.Value = 0
+		for i2,v2 in pairs(v:GetChildren()) do
+			v2.Value = 0
+		end
+	end
+	local Accuracy = getsenv(game.Players.LocalPlayer.PlayerGui.Client)
+	game:GetService("RunService"):BindToRenderStep("recoil", 100, function()
+		Accuracy.resetaccuracy()
+		Accuracy.RecoilX = 0
+		Accuracy.RecoilY = 0
+	end)
+end
+   end,
+})
+
+
+local Tab = Window:CreateTab("Visual", 5553946656) -- Title, Image
+
+local Button = Tab:CreateButton({
+   Name = "ESP",
+   Callback = function()
+   local function API_Check()
+            if Drawing == nil then
+                return "No"
+            else
+                return "Yes"
+            end
+        end
+
+        local Find_Required = API_Check()
+
+        if Find_Required == "No" then
+            game:GetService("StarterGui"):SetCore("SendNotification", {
+                Title = "Exunys Developer",
+                Text = "ESP script could not be loaded because your exploit is unsupported.",
+                Duration = math.huge,
+                Button1 = "OK"
+            })
+
+            return
+        end
+
+        local Players = game:GetService("Players")
+        local RunService = game:GetService("RunService")
+        local UserInputService = game:GetService("UserInputService")
+        local Camera = workspace.CurrentCamera
+
+        local Typing = false
+
+        _G.SendNotifications = true
+        _G.DefaultSettings = false
+        _G.TeamCheck = true -- Define para true para filtrar os jogadores do outro time
+        _G.ESPVisible = true
+        _G.TextColor = Color3.fromRGB(255, 80, 10)
+        _G.TextSize = 14
+        _G.Center = true
+        _G.Outline = true
+        _G.OutlineColor = Color3.fromRGB(0, 0, 0)
+        _G.TextTransparency = 0.7
+        _G.TextFont = Drawing.Fonts.UI
+        _G.DisableKey = Enum.KeyCode.Q
+
+        local function CreateESP()
+            for _, v in next, Players:GetPlayers() do
+                if v.Name ~= Players.LocalPlayer.Name and (_G.TeamCheck == true and Players.LocalPlayer.Team ~= v.Team) then
+                    local ESP = Drawing.new("Text")
+
+                    RunService.RenderStepped:Connect(function()
+                if workspace:FindFirstChild(v.Name) ~= nil and workspace[v.Name]:FindFirstChild("HumanoidRootPart") ~= nil then
+                    local Vector, OnScreen = Camera:WorldToViewportPoint(workspace[v.Name]:WaitForChild("Head", math.huge).Position)
+
+                    ESP.Size = _G.TextSize
+                    ESP.Center = _G.Center
+                    ESP.Outline = _G.Outline
+                    ESP.OutlineColor = _G.OutlineColor
+                    ESP.Color = _G.TextColor
+                    ESP.Transparency = _G.TextTransparency
+                    ESP.Font = _G.TextFont
+
+                    if OnScreen == true then
+                        local Part1 = workspace:WaitForChild(v.Name, math.huge):WaitForChild("HumanoidRootPart", math.huge).Position
+                        local Part2 = workspace:WaitForChild(Players.LocalPlayer.Name, math.huge):WaitForChild("HumanoidRootPart", math.huge).Position or 0
+                        local Dist = (Part1 - Part2).Magnitude
+                        ESP.Position = Vector2.new(Vector.X, Vector.Y - 25)
+                        ESP.Text = ("("..tostring(math.floor(tonumber(Dist)))..") "..v.Name.." ["..workspace[v.Name].Humanoid.Health.."]")
+                        if _G.TeamCheck == true then 
+                            if Players.LocalPlayer.Team ~= v.Team then
+                                ESP.Visible = _G.ESPVisible
+                            else
+                                ESP.Visible = false
+                            end
+                        else
+                            ESP.Visible = _G.ESPVisible
+                        end
+                    else
+                        ESP.Visible = false
+                    end
+                else
+                    ESP.Visible = false
+                end
+            end)
+
+            Players.PlayerRemoving:Connect(function()
+                        ESP.Visible = false
+                    end)
+                end
+            end
+
+    Players.PlayerAdded:Connect(function(Player)
+        Player.CharacterAdded:Connect(function(v)
+            if v.Name ~= Players.LocalPlayer.Name then 
+                local ESP = Drawing.new("Text")
+    
+                RunService.RenderStepped:Connect(function()
+                    if workspace:FindFirstChild(v.Name) ~= nil and workspace[v.Name]:FindFirstChild("HumanoidRootPart") ~= nil then
+                        local Vector, OnScreen = Camera:WorldToViewportPoint(workspace[v.Name]:WaitForChild("Head", math.huge).Position)
+    
+                        ESP.Size = _G.TextSize
+                        ESP.Center = _G.Center
+                        ESP.Outline = _G.Outline
+                        ESP.OutlineColor = _G.OutlineColor
+                        ESP.Color = _G.TextColor
+                        ESP.Transparency = _G.TextTransparency
+    
+                        if OnScreen == true then
+                            local Part1 = workspace:WaitForChild(v.Name, math.huge):WaitForChild("HumanoidRootPart", math.huge).Position
+                        local Part2 = workspace:WaitForChild(Players.LocalPlayer.Name, math.huge):WaitForChild("HumanoidRootPart", math.huge).Position or 0
+                            local Dist = (Part1 - Part2).Magnitude
+                            ESP.Position = Vector2.new(Vector.X, Vector.Y - 25)
+                            ESP.Text = ("("..tostring(math.floor(tonumber(Dist)))..") "..v.Name.." ["..workspace[v.Name].Humanoid.Health.."]")
+                            if _G.TeamCheck == true then 
+                                if Players.LocalPlayer.Team ~= Player.Team then
+                                    ESP.Visible = _G.ESPVisible
+                                else
+                                    ESP.Visible = false
+                                end
+                            else
+                                ESP.Visible = _G.ESPVisible
+                            end
+                        else
+                            ESP.Visible = false
+                        end
+                    else
+                        ESP.Visible = false
+                    end
+                end)
+    
+                Players.PlayerRemoving:Connect(function()
+                    ESP.Visible = false
+                end)
+            end
+        end)
+    end)
+end
+
+if _G.DefaultSettings == true then
+            _G.TeamCheck = true
+    _G.ESPVisible = true
+    _G.TextColor = Color3.fromRGB(40, 90, 255)
+    _G.TextSize = 14
+    _G.Center = true
+    _G.Outline = false
+    _G.OutlineColor = Color3.fromRGB(0, 0, 0)
+    _G.DisableKey = Enum.KeyCode.Q
+    _G.TextTransparency = 0.75
+end
+
+UserInputService.TextBoxFocused:Connect(function()
+    Typing = true
+end)
+
+UserInputService.TextBoxFocusReleased:Connect(function()
+    Typing = false
+end)
+
+UserInputService.InputBegan:Connect(function(Input)
+    if Input.KeyCode == _G.DisableKey and Typing == false then
+        _G.ESPVisible = not _G.ESPVisible
+        
+        if _G.SendNotifications == true then
+            game:GetService("StarterGui"):SetCore("SendNotification",{
+                Title = "Exunys Developer";
+                Text = "The ESP's visibility is now set to "..tostring(_G.ESPVisible)..".";
+                Duration = 5;
+            })
+        end
+    end
+end)
+
+local Success, Errored = pcall(function()
+    CreateESP()
+end)
+
+if Success and not Errored then
+    if _G.SendNotifications == true then
+        game:GetService("StarterGui"):SetCore("SendNotification",{
+            Title = "Exunys Developer";
+            Text = "ESP script has successfully loaded.";
+            Duration = 5;
+        })
+    end
+elseif Errored and not Success then
+    if _G.SendNotifications == true then
+        game:GetService("StarterGui"):SetCore("SendNotification",{
+            Title = "Exunys Developer";
+            Text = "ESP script has errored while loading, please check the developer console! (F9)";
+            Duration = 5;
+        })
+    end
+    TestService:Message("The ESP script has errored, please notify Exunys with the following information :")
+    warn(Errored)
+    print("!! IF THE ERROR IS A FALSE POSITIVE (says that a player cannot be found) THEN DO NOT BOTHER !!")
+end
+
+   end,
+})
+
+
+FovToggle:SetValue(false) -- Initialize FOV toggle to false
