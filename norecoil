@@ -1,0 +1,14 @@
+for i,v in pairs (game:GetService("ReplicatedStorage").Weapons:GetDescendants()) do 
+if v and v.Name ~= "C4" and v:FindFirstChild("Recoil") then 
+   v:FindFirstChild("Recoil").Value = 0
+v:FindFirstChild("Recoil").AngleY.Value = 0
+v:FindFirstChild("Recoil").AngleX.Value = 0
+for i,v in next,debug.getregistry() do
+ if type(v) =='function'then
+  local i = debug.getupvalues(v)
+  debug.setupvalue(v,'RecoilX',0)
+  debug.setupvalue(v,'RecoilY',0)
+  end
+  end
+  end
+  end
